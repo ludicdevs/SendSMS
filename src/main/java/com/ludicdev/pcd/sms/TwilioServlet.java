@@ -31,17 +31,22 @@ public class TwilioServlet extends HttpServlet {
     public static final String AUTH_TOKEN = "c7cba149c7d6d3eb46395b607dcee057";
  
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        verifyUserStatus(request, response);
-    	
-    	TwilioRestClient client = new TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN);
-        Account account = client.getAccount();
+        try {
+	    	verifyUserStatus(request, response);
+	    	
+	    	TwilioRestClient client = new TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN);
+	        Account account = client.getAccount();
+	        
+	        SMS msg = SMS.fromRequest(request);
+	        sendSms(account, msg);
+	        addSmsToDataStore(msg);
+	        
+	        request.setAttribute("sms-sent", true);
+	        request.setAttribute("phoneNo", msg.getDestination());
+        } catch (Exception ex) {
+        	request.setAttribute("error", ex.getMessage());
+        }
         
-        SMS msg = SMS.fromRequest(request);
-        sendSms(account, msg);
-        addSmsToDataStore(msg);
-        
-        request.setAttribute("sms-sent", true);
-        request.setAttribute("phoneNo", msg.getDestination());
         RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/sendSms.jsp");
         dispatcher.forward(request, response);
     }
@@ -70,18 +75,14 @@ public class TwilioServlet extends HttpServlet {
         }
     }
     
-    private void sendSms(Account account, SMS msg) {
-    	try {
-	    	SmsFactory smsFactory = account.getSmsFactory();
-	        Map<String, String> smsParams = new HashMap<String, String>();
-	        smsParams.put("To", msg.getDestination()); 
-	        smsParams.put("From", msg.getFrom());
-	        smsParams.put("Body", msg.getMessage());
-	        
-	        smsFactory.create(smsParams);
-    	} catch (TwilioRestException ex) {
-    		ex.printStackTrace();
-    	}
+    private void sendSms(Account account, SMS msg) throws TwilioRestException {
+    	SmsFactory smsFactory = account.getSmsFactory();
+        Map<String, String> smsParams = new HashMap<String, String>();
+        smsParams.put("To", msg.getDestination()); 
+        smsParams.put("From", msg.getFrom());
+        smsParams.put("Body", msg.getMessage());
+        
+        smsFactory.create(smsParams);
     }
     
     

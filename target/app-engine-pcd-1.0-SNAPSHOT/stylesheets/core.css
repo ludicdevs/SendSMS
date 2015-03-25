@@ -87,7 +87,7 @@ a {
 	line-height: 70px;
 }
 
-#user-info, #user-id, #logout {
+#user-id, #logout {
 	display: inline-block;
 	line-height: 70px;
 	color: #fff;
@@ -102,11 +102,22 @@ a {
 	margin-right: 10px;
 }
 
-#sms-alert {
+#sms-alert, #sms-alert-err {
 	height: 20px;
 	background: #97CFA1;
 	padding: 0 20px;
 	color: #fff;
+	text-overflow: ellipsis;
+}
+
+.alert-txt {
+	width: 800px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#sms-alert-err {
+	background: #F56464;
 }
 
 #close {
@@ -124,12 +135,13 @@ a {
 	height: 500px;
 	display: inline-block;
 	float: right;
-	padding: 0 20px;
+	padding: 0 50px;
 	margin-top: 80px;
 	font-family: calibri;
 }
 
 #sent-messages {
+	width: 400px;
 	height: 450px;
 	overflow-y: auto;
 }

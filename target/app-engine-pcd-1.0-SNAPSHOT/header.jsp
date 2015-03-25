@@ -27,13 +27,19 @@
 </div>
 
 <%
-	if (request.getAttribute("sms-sent") != null) {
+	if (request.getAttribute("sms-sent") != null || request.getAttribute("error") != null) {
 %>
-	<div id="sms-alert">
-		The message has been sent to <%= request.getAttribute("phoneNo") %>.
-		<div id="close"> x </div>
-	</div>
-<%
+		<% if (request.getAttribute("error") != null) { %>
+			<div id="sms-alert-err">
+				<div id="close"> x </div>
+				<span class="alert-txt"> An error occurred: <%= request.getAttribute("error") %>. </span>
+			</div>
+		<% } else { %>
+			<div id="sms-alert">
+				<div id="close"> x </div>
+				<span class="alert-txt"> The message has been sent to <%= request.getAttribute("phoneNo") %>. </span>
+			</div>
+		<% } 
 	}
   }
 %>
